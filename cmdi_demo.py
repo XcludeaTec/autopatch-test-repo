@@ -1,10 +1,11 @@
 import subprocess
+import shlex
 
 def execute_user_ping(user_input: str) -> str:
-    # Vulnerable Command Injection
-    command = f"ping -c 1 {user_input}"
+    # Command Injection Defense: Use shlex.quote() to safely construct the command
+    command = shlex.quote("ping -c 1 " + user_input)
     try:
-        result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(command, shell=False, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         return result.stdout
     except subprocess.CalledProcessError as e:
-        return f"Error: {e.stderr}"
+        return f"Error executing command: {e.stderr}"
